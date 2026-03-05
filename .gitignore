@@ -1,0 +1,4 @@
+target/
+workspace_data/
+.env
+*.log

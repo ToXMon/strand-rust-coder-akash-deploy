@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>RustCoder MVP</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 900px; margin: 20px auto; }
+    textarea, input, select { width: 100%; margin: 8px 0; }
+    pre { background: #111; color: #eee; padding: 12px; white-space: pre-wrap; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  </style>
+</head>
+<body>
+  <h1>RustCoder MVP</h1>
+
+  <h2>Create Project</h2>
+  <input id="name" placeholder="Project name" value="demo-rustcoder" />
+  <select id="template">
+    <option value="cli-basic">cli-basic</option>
+    <option value="axum-basic">axum-basic</option>
+  </select>
+  <button onclick="createProject()">Create Project</button>
+
+  <h2>AI Chat</h2>
+  <textarea id="chat" rows="3" placeholder="Ask the Rust Strand model..."></textarea>
+  <button onclick="chat()">Send</button>
+
+  <h2>Code Generation</h2>
+  <textarea id="prompt" rows="4" placeholder="Generate Rust files..."></textarea>
+  <button onclick="generate()">Generate Files</button>
+
+  <h2>Compilation Pipeline</h2>
+  <button onclick="pipeline()">Run fmt/check/test/clippy</button>
+
+  <h2>Output</h2>
+  <pre id="out"></pre>
+
+  <script>
+    let projectId = null;
+    const out = (x) => document.getElementById('out').textContent = typeof x === 'string' ? x : JSON.stringify(x, null, 2);
+
+    async function createProject() {
+      const res = await fetch('/api/v1/projects', {
+        method: 'POST',
+        headers: {'content-type':'application/json'},
+        body: JSON.stringify({name: document.getElementById('name').value, template: document.getElementById('template').value})
+      });
+      const data = await res.json();
+      projectId = data.project_id;
+      out(data);
+    }
+
+    async function chat() {
+      const res = await fetch('/api/v1/chat', {
+        method: 'POST', headers: {'content-type':'application/json'},
+        body: JSON.stringify({message: document.getElementById('chat').value})
+      });
+      out(await res.json());
+    }
+
+    async function generate() {
+      if (!projectId) return out('Create project first');
+      const res = await fetch(`/api/v1/projects/${projectId}/generate`, {
+        method: 'POST', headers: {'content-type':'application/json'},
+        body: JSON.stringify({prompt: document.getElementById('prompt').value})
+      });
+      out(await res.json());
+    }
+
+    async function pipeline() {
+      if (!projectId) return out('Create project first');
+      const res = await fetch(`/api/v1/projects/${projectId}/pipeline/run`, {method: 'POST'});
+      out(await res.json());
+    }
+  </script>
+</body>
+</html>
