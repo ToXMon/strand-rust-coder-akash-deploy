@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  rustcoder-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    image: wijnaldum/rustcoder-api:0.1.0
+    environment:
+      RUSTCODER_BIND: 0.0.0.0:8080
+      RUSTCODER_INFERENCE_BASE_URL: ${RUSTCODER_INFERENCE_BASE_URL}
+      RUSTCODER_INFERENCE_MODEL: ${RUSTCODER_INFERENCE_MODEL:-Fortytwo-Network/Strand-Rust-Coder-14B-v1}
+      RUSTCODER_INFERENCE_API_KEY: ${RUSTCODER_INFERENCE_API_KEY:-placeholder}
+      RUST_LOG: ${RUST_LOG:-info}
+    ports:
+      - "8080:8080"
+
+  rustcoder-web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    image: wijnaldum/rustcoder-web:0.1.0
+    depends_on:
+      - rustcoder-api
+    ports:
+      - "3000:80"

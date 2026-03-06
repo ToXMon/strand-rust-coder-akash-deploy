@@ -186,6 +186,51 @@ curl http://<akash-uri>/v1/chat/completions \
 
 ---
 
+## Dockerized Full-Stack Deployment (Frontend + Backend)
+
+This repo now includes:
+
+- `Dockerfile.api` (Rust backend API)
+- `Dockerfile.web` (Nginx frontend)
+- `deploy/nginx.conf` (proxies `/api/*` to backend)
+- `deploy-fullstack.yaml` (Akash SDL for frontend+backend)
+
+### Build images locally
+
+```bash
+docker build -f Dockerfile.api -t wijnaldum/rustcoder-api:0.1.0 .
+docker build -f Dockerfile.web -t wijnaldum/rustcoder-web:0.1.0 .
+```
+
+### Push images to Docker Hub
+
+```bash
+docker login
+docker push wijnaldum/rustcoder-api:0.1.0
+docker push wijnaldum/rustcoder-web:0.1.0
+```
+
+### Deploy frontend + backend on Akash
+
+1. Edit `deploy-fullstack.yaml` and set:
+   - `RUSTCODER_INFERENCE_BASE_URL=http://<your-model-lease-uri>/v1`
+2. Deploy:
+
+```bash
+provider-services tx deployment create deploy-fullstack.yaml --from <wallet> --node https://rpc.akashnet.net:443 --chain-id akashnet-2 --gas auto --gas-adjustment 1.4 --yes
+provider-services query market bid list --owner $(provider-services keys show <wallet> -a) --node https://rpc.akashnet.net:443 --chain-id akashnet-2
+provider-services tx market lease create --dseq <DSEQ> --gseq 1 --oseq 1 --provider <PROVIDER> --from <wallet> --node https://rpc.akashnet.net:443 --chain-id akashnet-2 --gas auto --gas-adjustment 1.4 --yes
+provider-services send-manifest deploy-fullstack.yaml --dseq <DSEQ> --from <wallet> --provider <PROVIDER>
+```
+
+3. Get frontend URI:
+
+```bash
+provider-services lease-status --dseq <DSEQ> --gseq 2 --oseq 1 --provider <PROVIDER>
+```
+
+Open the returned URI in browser. Frontend routes `/api/*` to `rustcoder-api` internally.
+
 ## Production Deployment (RustCoder App + Akash Model)
 
 Recommended split:
