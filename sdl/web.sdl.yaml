@@ -1,0 +1,34 @@
+version: "2.0"
+
+services:
+  rustcoder-web:
+    image: wijnaldum/rustcoder-web:0.1.0
+    expose:
+      - port: 80
+        as: 80
+        to:
+          - global: true
+
+profiles:
+  compute:
+    rustcoder-web:
+      resources:
+        cpu:
+          units: 0.5
+        memory:
+          size: 256Mi
+        storage:
+          size: 1Gi
+
+  placement:
+    akash:
+      pricing:
+        rustcoder-web:
+          denom: uakt
+          amount: 3000
+
+deployment:
+  rustcoder-web:
+    akash:
+      profile: rustcoder-web
+      count: 1
