@@ -1,0 +1,40 @@
+version: "2.0"
+
+services:
+  rustcoder-api:
+    image: wijnaldum/rustcoder-api:0.1.0
+    env:
+      - "RUSTCODER_BIND=0.0.0.0:8080"
+      - "RUSTCODER_INFERENCE_BASE_URL=http://REPLACE_WITH_MODEL_URI/v1"
+      - "RUSTCODER_INFERENCE_MODEL=Fortytwo-Network/Strand-Rust-Coder-14B-v1"
+      - "RUSTCODER_INFERENCE_API_KEY=placeholder"
+      - "RUST_LOG=info"
+    expose:
+      - port: 8080
+        as: 8080
+        to:
+          - global: true
+
+profiles:
+  compute:
+    rustcoder-api:
+      resources:
+        cpu:
+          units: 2
+        memory:
+          size: 2Gi
+        storage:
+          size: 5Gi
+
+  placement:
+    akash:
+      pricing:
+        rustcoder-api:
+          denom: uakt
+          amount: 12000
+
+deployment:
+  rustcoder-api:
+    akash:
+      profile: rustcoder-api
+      count: 1
