@@ -3,8 +3,14 @@ version: "2.0"
 services:
   rustcoder-model:
     image: vllm/vllm-openai:v0.6.3.post1
+    command:
+      - "python3"
+      - "-m"
+      - "vllm.entrypoints.openai.api_server"
     args:
       - "--model"
+      - "Fortytwo-Network/Strand-Rust-Coder-14B-v1"
+      - "--served-model-name"
       - "Fortytwo-Network/Strand-Rust-Coder-14B-v1"
       - "--host"
       - "0.0.0.0"
@@ -40,7 +46,7 @@ services:
           - service: rustcoder-web
 
   rustcoder-web:
-    image: wijnaldum/rustcoder-web:0.1.0
+    image: wijnaldum/rustcoder-web:0.1.1
     expose:
       - port: 80
         as: 80
