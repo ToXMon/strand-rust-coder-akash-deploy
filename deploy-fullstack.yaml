@@ -28,6 +28,7 @@ services:
       - port: 8080
         to:
           - service: rustcoder-web
+          - global: true
 
   rustcoder-web:
     image: wijnaldum/rustcoder-web:0.1.1
@@ -62,7 +63,7 @@ profiles:
         cpu:
           units: 4
         memory:
-          size: 4Gi
+          size: 6Gi
         storage:
           size: 5Gi
 
@@ -97,7 +98,7 @@ deployment:
   rustcoder-api:
     akash:
       profile: rustcoder-api
-      count: 1
+      count: 2
 
   rustcoder-web:
     akash:
