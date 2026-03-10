@@ -4,24 +4,9 @@ services:
   rustcoder-model:
     image: vllm/vllm-openai:v0.6.3.post1
     command:
-      - "python3"
-      - "-m"
-      - "vllm.entrypoints.openai.api_server"
-      - "--model"
-      - "Fortytwo-Network/Strand-Rust-Coder-14B-v1"
-      - "--served-model-name"
-      - "Fortytwo-Network/Strand-Rust-Coder-14B-v1"
-      - "--host"
-      - "0.0.0.0"
-      - "--port"
-      - "8000"
-      - "--dtype"
-      - "bfloat16"
-      - "--max-model-len"
-      - "8192"
-      - "--gpu-memory-utilization"
-      - "0.92"
-      - "--trust-remote-code"
+      - "/bin/sh"
+      - "-lc"
+      - "python3 -m vllm.entrypoints.openai.api_server --model Fortytwo-Network/Strand-Rust-Coder-14B-v1 --served-model-name Fortytwo-Network/Strand-Rust-Coder-14B-v1 --host 0.0.0.0 --port 8000 --dtype bfloat16 --max-model-len 8192 --gpu-memory-utilization 0.92 --trust-remote-code"
     env:
       - "HF_HUB_ENABLE_HF_TRANSFER=1"
       # Optional if model requires gated access token
