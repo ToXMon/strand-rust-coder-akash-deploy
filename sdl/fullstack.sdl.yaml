@@ -7,7 +7,6 @@ services:
       - "python3"
       - "-m"
       - "vllm.entrypoints.openai.api_server"
-    args:
       - "--model"
       - "Fortytwo-Network/Strand-Rust-Coder-14B-v1"
       - "--served-model-name"
