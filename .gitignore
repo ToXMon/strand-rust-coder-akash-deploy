@@ -1,0 +1,22 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Env files
+.env*
+!.env.example
+
+# Logs
+*.log
+
+node_modules
+dist
+__pycache__
+target/
